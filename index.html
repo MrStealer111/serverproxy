@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ServerProxy — Free VPN Subscription</title>
+<meta name="description" content="Free VPN subscription with WireGuard, VLESS and Shadowsocks servers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%2310b981'/%3E%3Cpath d='M24 9l11 5.5v9.5c0 7.5-4.9 12.5-11 15-6.1-2.5-11-7.5-11-15v-9.5z' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M18.5 24l4 4 7.5-7.5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#070b14;
+    --card:rgba(255,255,255,.045);
+    --card-h:rgba(255,255,255,.075);
+    --line:rgba(255,255,255,.09);
+    --txt:#e8eefc;
+    --muted:#8b98b8;
+    --accent:#10b981;
+    --accent2:#06b6d4;
+    --radius:16px;
+  }
+  html,body{height:100%}
+  body{
+    background:var(--bg);color:var(--txt);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Myanmar",sans-serif;
+    min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(110px);opacity:.20;z-index:-1;pointer-events:none}
+  body::before{width:560px;height:560px;background:#10b981;top:-180px;right:-120px}
+  body::after{width:520px;height:520px;background:#0ea5e9;bottom:-200px;left:-140px}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 18px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:36px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;box-shadow:0 8px 24px rgba(16,185,129,.32)}
+  .logo svg{width:26px;height:26px}
+  .brand h1{font-size:21px;letter-spacing:-.3px;font-weight:800}
+  .brand p{font-size:12.5px;color:var(--muted)}
+  .tg{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#cfd9ef;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--card);padding:9px 15px;border-radius:999px;transition:.2s}
+  .tg:hover{background:var(--card-h);transform:translateY(-1px);color:#fff}
+
+  .hero{text-align:center;margin-bottom:28px}
+  .hero h2{font-size:clamp(26px,5vw,40px);font-weight:800;letter-spacing:-1px;background:linear-gradient(180deg,#fff,#a7b6d6);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+  .hero p{color:var(--muted);font-size:15px;max-width:620px;margin:0 auto}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:18px;backdrop-filter:blur(14px)}
+  .panel .label{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(16,185,129,.16)}
+  .subrow{display:flex;gap:10px;flex-wrap:wrap}
+  .subrow input{flex:1 1 320px;min-width:0;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:11px;color:#9fb0d0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;padding:12px 14px;outline:none}
+  .subrow input:focus{border-color:rgba(16,185,129,.6)}
+  button{font-family:inherit;cursor:pointer;border:none}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;font-size:13.5px;font-weight:700;transition:.18s;white-space:nowrap}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04140f}
+  .btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-ghost{background:rgba(255,255,255,.06);color:#cfd9ef;border:1px solid var(--line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.11);color:#fff}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+  .stat b{display:block;font-size:24px;font-weight:800;background:linear-gradient(135deg,#fff,#9fb0d0);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:600;padding:8px 15px;border-radius:999px;transition:.18s}
+  .chip:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .chip.active{background:linear-gradient(135deg,rgba(16,185,129,.22),rgba(6,182,212,.18));border-color:rgba(16,185,129,.45);color:#7ff0c6}
+  .chip small{opacity:.7;margin-left:4px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;transition:.2s;position:relative;overflow:hidden}
+  .card:hover{background:var(--card-h);border-color:rgba(16,185,129,.32);transform:translateY(-2px)}
+  .card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .card .nm{font-size:14.5px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+  .badge{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:5px 9px;border-radius:7px;white-space:nowrap}
+  .b-vless{background:rgba(99,102,241,.16);color:#a5b4fc;border:1px solid rgba(99,102,241,.32)}
+  .b-ss{background:rgba(244,114,182,.14);color:#f9a8d4;border:1px solid rgba(244,114,182,.3)}
+  .b-wg{background:rgba(16,185,129,.14);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+  .hint{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--muted);word-break:break-all;margin-bottom:12px}
+  .card .act{display:flex;gap:8px}
+  .card .act .btn{flex:1;padding:9px 10px;font-size:12px;border-radius:9px}
+  .foot{margin-top:34px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.9}
+  .foot a{color:#7ff0c6;text-decoration:none;font-weight:600}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);background:#0d1424;border:1px solid rgba(16,185,129,.4);color:#d8f7ea;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:99;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media(max-width:560px){.wrap{padding:20px 14px 44px}.stats{gap:9px}.stat b{font-size:20px}header{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#04140f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.5v5.5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6.5z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div><h1>ServerProxy</h1><p>Free VPN Subscription</p></div>
+    </div>
+    <a class="tg" href="https://t.me/MrStealer_Official" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3l-2.9 14.1c-.2 1-.8 1.2-1.6.8l-4.4-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.6-.2L8.1 12.9l-4.3-1.3c-.9-.3-.9-.9.2-1.3l16.8-6.5c.8-.3 1.5.2 1.1 1.5z"/></svg> Telegram</a>
+  </header>
+
+  <div class="hero">
+    <h2>Fast &amp; Free VPN Servers</h2>
+    <p>Add the subscription link to v2rayNG, V2BOX, Shadowrocket or any compatible client. Refresh inside the app to get fresh keys.</p>
+  </div>
+
+  <section class="panel">
+    <div class="label"><span class="dot"></span> Subscription Link</div>
+    <div class="subrow">
+      <input id="suburl" readonly value="https://gist.githubusercontent.com/MrStealer111/a472ad6cc261f13d34a4c976c37c8125/raw/ServerProxy">
+      <button class="btn btn-primary" onclick="copyText(document.getElementById('suburl').value,'Subscription link copied')">Copy Link</button>
+      <a class="btn btn-ghost" href="https://gist.githubusercontent.com/MrStealer111/a472ad6cc261f13d34a4c976c37c8125/raw/ServerProxy" target="_blank" rel="noopener">Open</a>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><b id="statTotal">0</b><span>Servers</span></div>
+    <div class="stat"><b id="statCountries">0</b><span>Countries</span></div>
+    <div class="stat"><b id="statProtocols">0</b><span>Protocols</span></div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+
+  <div class="foot">
+    <div>ချိတ်ဆက်မရပါက app ထဲမှာ Refresh နှိပ်ပြီး နောက်တစ်ခု ပြောင်းသုံးပါ။</div>
+    <div>Support: <a href="https://t.me/MrStealer_Official" target="_blank" rel="noopener">@MrStealer_Official</a></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SERVERS = [{"name": "🇸🇬 Singapore Server 1", "type": "VLESS", "host": "sg.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@sg.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=www.sony.com&fp=chrome&pbk=0YoIuSCuppS3SwPMNztXXn37vRsQQtOxVyIVsTthpzg&sid=7681de4f&spx=%2Fc40d33db6354698&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Server%201"}, {"name": "🇸🇬 Singapore Server 2", "type": "VLESS", "host": "sg2.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@sg2.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=v47AHwPyDl4BvNZuQkTb9-wwxbdkp2yGh7IbztKvgQY&sid=8d36bcabaabb7eb6&spx=%2Fcf4c87a3585ec68&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Server%202"}, {"name": "🇸🇬 Singapore Server 3", "type": "VLESS", "host": "sg3.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@sg3.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=krs2ZwIcpCrnMuCBHIn6NhsZ6lDLXF9EE7SmDwqUaiI&sid=f80bf12eae23&spx=%2Fd1ff2eb94d5dd6c&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Server%203"}, {"name": "🇯🇵 Japan Server", "type": "VLESS", "host": "jp.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@jp.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=cXez-UcQktnsncAaUjgtXvanQUPrnVuP0SGf2qxGpRo&sid=32b8&spx=%2Fb148b56a8522ac7&type=tcp&headerType=none#%F0%9F%87%AF%F0%9F%87%B5%20Japan%20Server"}, {"name": "🇺🇸 US Server", "type": "VLESS", "host": "us.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@us.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=XtO4IW0L4qehl0xi__7BggmDcz6HQReuJVqUj2R_YX4&sid=997469&spx=%2F328cd85552923bd&type=tcp&headerType=none#%F0%9F%87%BA%F0%9F%87%B8%20US%20Server"}, {"name": "🇸🇬 Singapore Test", "type": "VLESS", "host": "singapore.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@singapore.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=uuvvAP-Kkh5TY7u7K10OiwS1WzrUzV-B80xUG-z0Sx4&sid=1416&spx=%2F715c2c1c3bf4376&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Test"}, {"name": "🇹🇭 Thailand Server", "type": "VLESS", "host": "th.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@th.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=95klx-bqadfdnVnH68ausLMcFGtV_UCFN1XfJycsLHE&sid=edfea57c28b4cd&spx=%2F6114db6ee5e5ee7&type=tcp&headerType=none#%F0%9F%87%B9%F0%9F%87%AD%20Thailand%20Server"}, {"name": "🇺🇸 USAServer", "type": "Shadowsocks", "host": "198.251.78.252", "port": 443, "uri": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpPR05PYTZiUzY0U1lFckdHZUNTMEd6@198.251.78.252:443/?outline=1#%F0%9F%87%BA%F0%9F%87%B8%20USAServer", "method": "chacha20-ietf-poly1305"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.3", "port": 500, "uri": "wireguard://W8sUIXqAWzps6y9g1yhTAx0fVsg%2FmnRXTCZSEzK1oUk%3D@162.159.192.3:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:848b:36e8:e335:4fa9:df4a#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.11", "port": 500, "uri": "wireguard://dg5pc6GlAkQs9WtEw3Yy6SwwPKX2jWf3Oc7ebf8Il18%3D@162.159.192.11:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:86c0:1984:8e8f:b384:9645#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.16", "port": 500, "uri": "wireguard://pnC6c11gCTzcuMrJOuMZ7JDpNVE7oWHMmNarkF3OZcc%3D@162.159.192.16:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8efe:cd98:9ecd:ace7:6636#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.3", "port": 500, "uri": "wireguard://5wX8tR3JZJZw0NKfNhV1TiAfDVU1c8tGqLmKhm7Je6A%3D@162.159.195.3:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8da2:f0e9:aef4:d154:8e10#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.1", "port": 500, "uri": "wireguard://3%2F3RBo%2FWob9OIS8DohCQorT8ezt%2FoCgt%2BRysnbAfhN4%3D@162.159.195.1:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8c02:2668:b7b6:666c:9a4b#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "8.34.146.113", "port": 500, "uri": "wireguard://1swi7iQVLGkx%2ByTqFDUg6DrVQP%2BGV2JTELL%2Bg1crNCI%3D@8.34.146.113:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a6e:7c06:72db:cf3b:6694#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.15", "port": 500, "uri": "wireguard://1%2BAqp590yXKh0CYBr11ol1k5CUtOKhmr8m7ga7EJIu4%3D@162.159.192.15:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a64:3a2e:2142:588a:800b#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.6", "port": 500, "uri": "wireguard://bHXQPbXp1r%2FHlR8JXAaJMp%2FDuSLMANL3c3JlXrBo9FM%3D@162.159.195.6:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8e2b:9378:664b:2d21:b07f#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.13", "port": 500, "uri": "wireguard://%2BS8b6i9V1UvXjtk3dixhxZUoVqbbTZ7VZkc8wnlpT3s%3D@162.159.192.13:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8bcc:d418:5733:92:1e58#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.19", "port": 500, "uri": "wireguard://3MFMAp6cIQwvU%2FEQ6fS%2BOUe3FuO5CWNCyU1wWkC4mLI%3D@162.159.192.19:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8996:bfc9:67b8:bbb6:a7cd#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.4", "port": 500, "uri": "wireguard://OPQXESfdkdtySg%2FF5ZkvMcEXs2jRXTzx3koJYQ%2BMvo0%3D@162.159.195.4:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:87ef:bb01:a4cc:5e71:5927#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.8", "port": 500, "uri": "wireguard://iWouX7OrbY1EGoI7m194It%2FV8zvS6sMOGtYcxYoi0IA%3D@162.159.195.8:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8ca2:15db:df03:d4f8:89fd#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.2", "port": 500, "uri": "wireguard://EDhT071qVAmHqpcbakKMcugzMH6bZcGPcdDJ8vg9nlw%3D@162.159.195.2:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a60:821:7b60:afaf:a246#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.6", "port": 500, "uri": "wireguard://RvAMNTN54rvy48zS9lnbSnTiDlcKWFjEgnzdUA64W%2FY%3D@162.159.192.6:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8357:bbee:bc0d:1f59:368e#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.17", "port": 500, "uri": "wireguard://K9YDhM9AyTjEN76kxqAnQK9SHlA%2BpmSwtZMb3sgFWzU%3D@162.159.192.17:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:89bd:6d54:71c9:ba4c:f7f8#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.2", "port": 500, "uri": "wireguard://1nPfLFFt0QbddzPvPEFr%2BCT%2BZ3xHp4h6RkJopnTcYHU%3D@162.159.192.2:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8c0d:84b:ac34:189f:3dce#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.5", "port": 500, "uri": "wireguard://gv9USA2GYLk%2Fd3nieElF6kvBJ3aXIkCB14rGNFo9WZA%3D@162.159.192.5:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:86ef:7f38:b8e8:7afd:41b#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "188.114.99.22", "port": 500, "uri": "wireguard://L85ju5F6klMWtMMJLMahIZJsTEHtZzyHvZzVosLia0Q%3D@188.114.99.22:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a63:3f99:c0b4:9e8a:7a00#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.4", "port": 500, "uri": "wireguard://7BMlyRMXFEsRwkEkkAFrWWi0ySgGpYyZjcrTVdhfphA%3D@162.159.192.4:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a8b:2f47:52e1:2906:15cb#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.5", "port": 500, "uri": "wireguard://FGwUBzu%2FskMLtzD14wX%2BlrkRGt1vzVMy%2FkoWW0bWyfQ%3D@162.159.195.5:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:87f9:b292:9763:43a4:c514#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.20", "port": 500, "uri": "wireguard://zmDmfirqCugs9eCn8qvJJ0ARQzhY8zpV5%2BVXOHyNE7M%3D@162.159.192.20:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8eb0:fbd9:c353:3d71:43f4#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.12", "port": 500, "uri": "wireguard://sP5Vf7nnjwpdIRowzkW9U97N8gk7PHMZpApbya%2FzJEc%3D@162.159.192.12:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:898e:de64:44d5:3bab:e095#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.14", "port": 500, "uri": "wireguard://HHI4A45Ul53SBGlnwPdKlhTYc3S7d%2BdfG0faiu%2F5tBg%3D@162.159.192.14:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8254:e6e5:1709:661:4d24#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.10", "port": 500, "uri": "wireguard://LC5BBfdv3bPvYDcbtvJIoreAM4WykygurSIsDkn5QEA%3D@162.159.195.10:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8198:dc27:a0ba:6f64:a05c#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.7", "port": 500, "uri": "wireguard://cuO345yLqgA%2BUplfP2XEMZ%2FexMjqtoD5KUhPTJLTNHw%3D@162.159.192.7:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8aef:9306:f0f6:1d5e:b5a3#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}];
+let filter = 'All';
+
+function flagOf(name){
+  const m = name.match(/[\u{1F1E6}-\u{1F1FF}]{2}/u);
+  return m ? m[0] : '';
+}
+function plainName(name){ return name.replace(/[\u{1F1E6}-\u{1F1FF}]{2}\s*/gu,'').trim() || 'Server'; }
+
+const TYPE_CLASS = {'VLESS':'b-vless','Shadowsocks':'b-ss','WireGuard':'b-wg'};
+
+function render(){
+  const list = SERVERS.filter(s => filter === 'All' || s.type === filter);
+  document.getElementById('grid').innerHTML = list.map((s,i)=>`
+    <div class="card">
+      <div class="top">
+        <div class="nm">${flagOf(s.name) ? '<span style="font-size:17px;vertical-align:-2px;margin-right:6px">'+flagOf(s.name)+'</span>' : ''}${escapeHtml(plainName(s.name))}</div>
+        <span class="badge ${TYPE_CLASS[s.type]||''}">${s.type}</span>
+      </div>
+      <div class="hint">${escapeHtml(s.host)}:${s.port}${s.method ? ' · '+escapeHtml(s.method) : ''}</div>
+      <div class="act">
+        <button class="btn btn-ghost" onclick="copyText(SERVERS_BY_KEY['${s.type}|${s.host}|${s.port}|${i}'],'Config copied')">Copy Config</button>
+      </div>
+    </div>`).join('');
+}
+
+const SERVERS_BY_KEY = {};
+SERVERS.forEach((s,i)=>{ SERVERS_BY_KEY[s.type+'|'+s.host+'|'+s.port+'|'+i] = s.uri; });
+
+function escapeHtml(t){ return String(t).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function buildFilters(){
+  const types = ['All', ...new Set(SERVERS.map(s=>s.type))];
+  document.getElementById('filters').innerHTML = types.map(t=>{
+    const n = t==='All' ? SERVERS.length : SERVERS.filter(s=>s.type===t).length;
+    return `<button class="chip ${t===filter?'active':''}" onclick="setFilter('${t}')">${t}<small>${n}</small></button>`;
+  }).join('');
+}
+function setFilter(t){ filter=t; buildFilters(); render(); }
+
+function copyText(txt, msg){
+  const done = ()=>toast(msg||'Copied');
+  if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done)); }
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt, cb){
+  const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta); cb&&cb();
+}
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),1900);
+}
+
+// stats
+document.getElementById('statTotal').textContent = SERVERS.length;
+document.getElementById('statCountries').textContent = new Set(SERVERS.map(s=>flagOf(s.name)).filter(Boolean)).size;
+document.getElementById('statProtocols').textContent = new Set(SERVERS.map(s=>s.type)).size;
+
+buildFilters(); render();
+</script>
+</body>
+</html>
