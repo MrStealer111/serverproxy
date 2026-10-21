@@ -5,214 +5,251 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ServerProxy — Free VPN Subscription</title>
 <meta name="description" content="Free VPN subscription with WireGuard, VLESS and Shadowsocks servers.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%238b5cf6'/%3E%3Cpath d='M24 9l11 5.5v9.5c0 7.5-4.9 12.5-11 15-6.1-2.5-11-7.5-11-15v-9.5z' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M18.5 24l4 4 7.5-7.5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='11' fill='%230b0d0e'/%3E%3Cpath d='M24 10l10 5v8.5c0 6.8-4.4 11.4-10 13.5-5.6-2.1-10-6.7-10-13.5V15z' fill='none' stroke='%2334d399' stroke-width='2.4' stroke-linejoin='round'/%3E%3Cpath d='M19.5 23.5l3.2 3.2 6-6' fill='none' stroke='%2334d399' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
-    --bg:#050510;
-    --panel:rgba(255,255,255,.044);
-    --panel-h:rgba(255,255,255,.075);
-    --line:rgba(255,255,255,.09);
-    --txt:#eef1ff;
-    --muted:#8e97b8;
-    --v:#8b5cf6;
-    --p:#ec4899;
-    --c:#22d3ee;
-    --ok:#34d399;
-    --r:18px;
+    --bg:#08090a;
+    --surface:#0d0f10;
+    --surface-2:#111314;
+    --line:rgba(255,255,255,.072);
+    --line-2:rgba(255,255,255,.14);
+    --txt:#eceef0;
+    --muted:#828a94;
+    --muted-2:#5c646d;
+    --accent:#34d399;
+    --accent-dim:rgba(52,211,153,.1);
   }
   html{scroll-behavior:smooth}
   body{
     background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.6;overflow-x:hidden;
     font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Myanmar",sans-serif;
-    -webkit-font-smoothing:antialiased;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   }
-  /* ---------- animated background ---------- */
-  .bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
-  .blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.42;animation:drift 22s ease-in-out infinite;will-change:transform}
-  .b1{width:560px;height:560px;background:#7c3aed;top:-160px;left:-120px}
-  .b2{width:480px;height:480px;background:#db2777;top:26%;right:-160px;animation-delay:-7s}
-  .b3{width:640px;height:640px;background:#0891b2;bottom:-260px;left:28%;animation-delay:-14s;opacity:.34}
-  .b4{width:320px;height:320px;background:#4f46e5;top:52%;left:8%;animation-delay:-4s;opacity:.3}
-  @keyframes drift{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(60px,-50px,0) scale(1.08)}66%{transform:translate3d(-50px,40px,0) scale(.95)}}
-  .grid{position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:58px 58px;-webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 78%);mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 78%)}
-  .glow{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(520px circle at var(--mx,50%) var(--my,20%),rgba(139,92,246,.12),transparent 62%)}
 
-  .wrap{max-width:1120px;margin:0 auto;padding:26px 18px 72px}
+  /* ---------------- background ---------------- */
+  .bg{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none}
+  .rings{
+    position:absolute;left:50%;top:-560px;width:1500px;height:1500px;transform:translateX(-50%);
+    background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.055) 0 1px,transparent 1px 74px);
+    -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 8%,transparent 60%);
+    mask-image:radial-gradient(circle at 50% 50%,#000 8%,transparent 60%);
+  }
+  .wash{position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:radial-gradient(ellipse 55% 42% at 50% -8%,rgba(52,211,153,.10),transparent 72%)}
+  .dots{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1px);
+    background-size:26px 26px;
+    -webkit-mask-image:radial-gradient(ellipse 74% 62% at 50% 26%,#000 10%,transparent 78%);
+    mask-image:radial-gradient(ellipse 74% 62% at 50% 26%,#000 10%,transparent 78%);
+    opacity:.55}
+  .grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.028;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-  /* ---------- nav ---------- */
-  nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:54px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--v),var(--p));display:grid;place-items:center;box-shadow:0 10px 30px rgba(139,92,246,.4);animation:pulseGlow 3.6s ease-in-out infinite}
-  @keyframes pulseGlow{0%,100%{box-shadow:0 10px 30px rgba(139,92,246,.35)}50%{box-shadow:0 10px 44px rgba(236,72,153,.5)}}
-  .logo svg{width:26px;height:26px}
-  .brand h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
-  .brand p{font-size:11.5px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;font-weight:700}
-  .tg{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#d7ddf5;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel);padding:10px 16px;border-radius:999px;transition:.25s}
-  .tg:hover{background:var(--panel-h);color:#fff;transform:translateY(-2px);border-color:rgba(139,92,246,.5)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px 80px;position:relative;z-index:1}
 
-  /* ---------- hero ---------- */
-  .hero{text-align:center;margin-bottom:44px}
-  .pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#c4b5fd;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);padding:7px 15px;border-radius:999px;margin-bottom:20px}
-  .pill .live{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:live 1.8s infinite}
-  @keyframes live{0%{box-shadow:0 0 0 0 rgba(52,211,153,.7)}70%{box-shadow:0 0 0 9px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
-  .hero h2{font-size:clamp(30px,6vw,58px);line-height:1.1;font-weight:900;letter-spacing:-1.8px;margin-bottom:16px;
-    background:linear-gradient(90deg,#c4b5fd,#f9a8d4,#67e8f9,#c4b5fd);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shift 9s linear infinite}
-  @keyframes shift{to{background-position:300% 0}}
-  .hero p{color:var(--muted);font-size:15.5px;max-width:640px;margin:0 auto 26px}
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:.22s;white-space:nowrap;position:relative;overflow:hidden}
-  .btn-primary{background:linear-gradient(135deg,var(--v),var(--p));color:#fff;box-shadow:0 10px 26px rgba(139,92,246,.35)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(236,72,153,.42)}
-  .btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.28) 50%,transparent 75%);transform:translateX(-120%);animation:shine 3.2s infinite}
-  @keyframes shine{0%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
-  .btn-ghost{background:var(--panel);color:#d7ddf5;border:1px solid var(--line);text-decoration:none}
-  .btn-ghost:hover{background:var(--panel-h);color:#fff;transform:translateY(-2px)}
+  /* ---------------- nav ---------------- */
+  nav{display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:22px 0;border-bottom:1px solid var(--line);margin-bottom:76px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .mark{width:34px;height:34px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface-2);display:grid;place-items:center}
+  .mark svg{width:19px;height:19px}
+  .brand b{font-size:15.5px;font-weight:650;letter-spacing:-.2px}
+  .brand i{font-style:normal;font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--muted-2);
+           border:1px solid var(--line);border-radius:5px;padding:2px 6px;margin-left:2px;vertical-align:1px}
+  .navr{display:flex;align-items:center;gap:22px}
+  .navr a{color:var(--muted);text-decoration:none;font-size:13.5px;font-weight:500;transition:color .2s}
+  .navr a:hover{color:var(--txt)}
+  .navr .ext{display:inline-flex;align-items:center;gap:6px;color:var(--txt);border:1px solid var(--line-2);
+              padding:8px 14px;border-radius:8px;background:var(--surface);transition:.2s}
+  .navr .ext:hover{background:var(--surface-2);border-color:rgba(255,255,255,.2)}
 
-  /* ---------- stats ---------- */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:56px}
-  .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 12px;text-align:center;backdrop-filter:blur(14px);transition:.25s}
-  .stat:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.4);background:var(--panel-h)}
-  .stat b{display:block;font-size:26px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(135deg,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .stat span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1.4px;font-weight:800}
+  /* ---------------- hero ---------------- */
+  .hero{padding:0 0 88px;text-align:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+           font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+           border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:rgba(13,15,16,.7);margin-bottom:28px}
+  .eyebrow .ld{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(52,211,153,.9)}
+  h1{font-size:clamp(36px,7.2vw,68px);line-height:1.02;letter-spacing:-.045em;font-weight:680;margin-bottom:24px}
+  h1 span{color:var(--muted-2)}
+  .hero p{color:var(--muted);font-size:16px;max-width:560px;margin:0 auto 34px;line-height:1.65}
+  .hero p b{color:var(--txt);font-weight:600}
+  .cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:9px;
+       font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent;font-family:inherit;
+       transition:.18s;white-space:nowrap;text-decoration:none}
+  .btn-p{background:var(--txt);color:#08090a;border-color:var(--txt)}
+  .btn-p:hover{background:#fff;transform:translateY(-1px)}
+  .btn-g{background:var(--surface);color:var(--txt);border-color:var(--line-2)}
+  .btn-g:hover{background:var(--surface-2);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+  .btn svg{width:15px;height:15px}
 
-  /* ---------- section title ---------- */
-  .sec{margin-bottom:18px;display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  .sec h3{font-size:20px;font-weight:800;letter-spacing:-.3px}
-  .sec span{font-size:13px;color:var(--muted)}
+  /* ---------------- stats strip ---------------- */
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:12px;
+         background:rgba(13,15,16,.6);overflow:hidden;margin-bottom:96px}
+  .strip div{padding:20px 22px;border-right:1px solid var(--line)}
+  .strip div:last-child{border-right:none}
+  .strip b{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:22px;font-weight:600;letter-spacing:-.5px}
+  .strip span{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);font-weight:600}
 
-  /* ---------- features ---------- */
-  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-bottom:58px}
-  .feat{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 20px;overflow:hidden;transition:.3s cubic-bezier(.22,1,.36,1)}
-  .feat::before{content:"";position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(140deg,rgba(139,92,246,.55),transparent 42%,rgba(34,211,238,.4));opacity:0;transition:.35s;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:1px}
-  .feat:hover{transform:translateY(-6px);background:var(--panel-h)}
-  .feat:hover::before{opacity:1}
-  .ficon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;margin-bottom:14px;background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.26);transition:.35s}
-  .feat:hover .ficon{transform:rotate(-6deg) scale(1.08)}
-  .ficon svg{width:21px;height:21px;stroke:#c4b5fd;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .feat h4{font-size:15px;font-weight:800;margin-bottom:5px}
-  .feat p{font-size:12.8px;color:var(--muted);line-height:1.6}
+  /* ---------------- section ---------------- */
+  .sec{margin-bottom:20px;display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .sec .l{display:flex;align-items:baseline;gap:14px}
+  .sec .no{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--accent);letter-spacing:.1em}
+  .sec h2{font-size:19px;font-weight:640;letter-spacing:-.02em}
+  .sec .r{font-size:12.5px;color:var(--muted-2)}
 
-  /* ---------- subscription panel ---------- */
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:46px;backdrop-filter:blur(16px);position:relative;overflow:hidden}
-  .panel::after{content:"";position:absolute;top:-60%;right:-10%;width:320px;height:320px;background:radial-gradient(circle,rgba(236,72,153,.16),transparent 70%);pointer-events:none}
-  .plabel{font-size:11.5px;text-transform:uppercase;letter-spacing:1.6px;color:var(--muted);font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:9px}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(52,211,153,.16)}
-  .srow{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
-  .srow input{flex:1 1 300px;min-width:0;background:rgba(0,0,0,.38);border:1px solid var(--line);border-radius:12px;color:#a8b4d8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;padding:13px 15px;outline:none;transition:.2s}
-  .srow input:focus{border-color:rgba(139,92,246,.65);box-shadow:0 0 0 3px rgba(139,92,246,.12)}
+  /* ---------------- features ---------------- */
+  .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);
+         border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:96px}
+  .feat{background:var(--bg);padding:26px 22px;transition:background .25s;position:relative}
+  .feat:hover{background:var(--surface)}
+  .feat .ic{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;margin-bottom:34px}
+  .feat:hover .ic{border-color:rgba(52,211,153,.35);background:var(--accent-dim)}
+  .feat .ic svg{width:17px;height:17px;stroke:var(--muted);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:.25s}
+  .feat:hover .ic svg{stroke:var(--accent)}
+  .feat h3{font-size:14px;font-weight:620;margin-bottom:6px;letter-spacing:-.01em}
+  .feat p{font-size:12.8px;color:var(--muted);line-height:1.62}
 
-  /* ---------- country cards ---------- */
-  .countries{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
-  .country{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.3s}
-  .country:hover{border-color:rgba(139,92,246,.38);background:var(--panel-h)}
-  .chead{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
-  .flag{font-size:27px;line-height:1;filter:drop-shadow(0 3px 8px rgba(0,0,0,.45));transition:.35s}
-  .country:hover .flag{transform:scale(1.12) rotate(-4deg)}
-  .cinfo{flex:1;min-width:0}
-  .cname{font-size:15px;font-weight:800;letter-spacing:-.2px}
-  .cmeta{font-size:11.5px;color:var(--muted);display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:2px}
-  .tag{font-size:9.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;padding:3px 7px;border-radius:6px;border:1px solid}
-  .t-vless{color:#a5b4fc;background:rgba(99,102,241,.14);border-color:rgba(99,102,241,.3)}
-  .t-ss{color:#f9a8d4;background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.28)}
-  .t-wg{color:#6ee7b7;background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.28)}
-  .chev{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid var(--line);transition:.35s;flex:0 0 auto}
-  .chev svg{width:14px;height:14px;stroke:#9aa5c4;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-  .country.open .chev{transform:rotate(180deg);background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.4)}
-  .cbody{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1)}
-  .country.open .cbody{max-height:2400px}
-  .cline{display:flex;align-items:center;gap:10px;padding:11px 18px;border-top:1px solid rgba(255,255,255,.05);font-size:12.5px}
-  .cline .h{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#9da9c9;word-break:break-all}
-  .copybtn{background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.32);color:#c4b5fd;font-size:11px;font-weight:800;padding:7px 12px;border-radius:8px;cursor:pointer;transition:.2s;font-family:inherit;white-space:nowrap}
-  .copybtn:hover{background:rgba(139,92,246,.3);color:#fff}
-  .copybtn.done{background:rgba(52,211,153,.18);border-color:rgba(52,211,153,.42);color:#6ee7b7}
+  /* ---------------- subscription ---------------- */
+  .subbox{border:1px solid var(--line);border-radius:12px;background:rgba(13,15,16,.65);
+          padding:22px;margin-bottom:96px;backdrop-filter:blur(8px)}
+  .subbox .lb{display:flex;align-items:center;gap:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+              font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-2);margin-bottom:13px}
+  .subbox .lb .ld{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .srow{display:flex;gap:9px;flex-wrap:wrap}
+  .srow input{flex:1 1 300px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+              color:#9aa4ae;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+              padding:12px 14px;outline:none;transition:.18s}
+  .srow input:focus{border-color:rgba(52,211,153,.5);box-shadow:0 0 0 3px rgba(52,211,153,.08)}
 
-  /* ---------- footer ---------- */
-  footer{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:12.5px;line-height:2}
-  footer a{color:#c4b5fd;text-decoration:none;font-weight:700}
-  footer a:hover{text-decoration:underline}
+  /* ---------------- regions ---------------- */
+  .regions{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px}
+  .reg{border:1px solid var(--line);border-radius:12px;background:rgba(13,15,16,.55);overflow:hidden;transition:border-color .2s,background .2s}
+  .reg:hover{border-color:var(--line-2);background:rgba(17,19,20,.7)}
+  .rhead{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
+  .flag{font-size:22px;line-height:1;filter:saturate(.9)}
+  .rinfo{flex:1;min-width:0}
+  .rcount{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.1em;
+          text-transform:uppercase;color:var(--muted-2);margin-bottom:2px}
+  .rname{font-size:14.5px;font-weight:600;letter-spacing:-.01em}
+  .rtags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+  .tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+       color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 6px}
+  .chev{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);display:grid;place-items:center;transition:.28s;flex:0 0 auto}
+  .chev svg{width:12px;height:12px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .reg.open .chev{transform:rotate(180deg);border-color:rgba(52,211,153,.35);background:var(--accent-dim)}
+  .reg.open .chev svg{stroke:var(--accent)}
+  .rbody{max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.4,0,.2,1)}
+  .reg.open .rbody{max-height:2600px}
+  .line{display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid rgba(255,255,255,.045);font-size:12px}
+  .line .h{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#8f99a3;word-break:break-all}
+  .cp{background:transparent;border:1px solid var(--line);color:var(--muted);font-size:10.5px;font-weight:600;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;
+      padding:6px 10px;border-radius:6px;cursor:pointer;transition:.18s;white-space:nowrap}
+  .cp:hover{border-color:rgba(52,211,153,.45);color:var(--accent);background:var(--accent-dim)}
+  .cp.done{border-color:rgba(52,211,153,.45);color:var(--accent)}
 
-  /* ---------- reveal ---------- */
-  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
-  .reveal.in{opacity:1;transform:none}
+  /* ---------------- footer ---------------- */
+  footer{border-top:1px solid var(--line);padding-top:24px;display:flex;justify-content:space-between;gap:14px;
+         flex-wrap:wrap;font-size:12.5px;color:var(--muted-2)}
+  footer a{color:var(--muted);text-decoration:none;transition:.18s}
+  footer a:hover{color:var(--txt)}
 
-  /* ---------- toast ---------- */
-  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(18px);background:#12102a;border:1px solid rgba(139,92,246,.45);color:#e6e0ff;padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:.28s;z-index:99;box-shadow:0 16px 40px rgba(0,0,0,.55)}
+  /* ---------------- motion ---------------- */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+  .rv.in{opacity:1;transform:none}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);
+         background:#111314;border:1px solid var(--line-2);color:var(--txt);padding:10px 18px;border-radius:8px;
+         font-size:12.5px;font-weight:500;opacity:0;pointer-events:none;transition:.22s;z-index:99;
+         box-shadow:0 18px 40px rgba(0,0,0,.6)}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  @media(max-width:640px){
-    .wrap{padding:20px 14px 52px}
-    .stats{grid-template-columns:repeat(2,1fr);gap:10px}
-    nav{margin-bottom:36px}
-    .hero{margin-bottom:34px}
-    .features{margin-bottom:42px}
-    .countries{grid-template-columns:1fr}
+  @media(max-width:700px){
+    nav{margin-bottom:52px;padding:18px 0}
+    .brand i,.navr a:not(.ext){display:none}
+    .strip{grid-template-columns:repeat(2,1fr);margin-bottom:68px}
+    .strip div{border-bottom:1px solid var(--line)}
+    .strip div:nth-child(2){border-right:none}
+    .strip div:nth-child(3),.strip div:nth-child(4){border-bottom:none}
+    .hero{padding-bottom:62px}
+    .feats,.subbox{margin-bottom:68px}
+    .regions{grid-template-columns:1fr}
+    footer{flex-direction:column}
   }
-  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
-<div class="grid"></div>
-<div class="glow" id="glow"></div>
+<div class="bg"><div class="rings"></div></div>
+<div class="wash"></div>
+<div class="dots"></div>
+<div class="grain"></div>
 
 <div class="wrap">
   <nav>
     <div class="brand">
-      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.5v5.5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6.5z"/><path d="M9 12l2 2 4-4"/></svg></div>
-      <div><h1>ServerProxy</h1><p>Free VPN</p></div>
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.4v5.4c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6.4z"/><path d="M9.2 11.9l2 2 3.6-3.6"/></svg>
+      </div>
+      <b>ServerProxy</b><i>v2</i>
     </div>
-    <a class="tg" href="https://t.me/MrStealer_Official" target="_blank" rel="noopener">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3l-2.9 14.1c-.2 1-.8 1.2-1.6.8l-4.4-3.2-2.1 2c-.2.2-.4.4-.9.4l.3-4.5 8.3-7.5c.4-.3-.1-.5-.6-.2L8.1 12.9l-4.3-1.3c-.9-.3-.9-.9.2-1.3l16.8-6.5c.8-.3 1.5.2 1.1 1.5z"/></svg>
-      Telegram</a>
+    <div class="navr">
+      <a href="#servers">Servers</a>
+      <a class="ext" href="https://t.me/MrStealer_Official" target="_blank" rel="noopener">
+        Telegram
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+      </a>
+    </div>
   </nav>
 
   <section class="hero">
-    <div class="pill reveal"><span class="live"></span> All Servers Online</div>
-    <h2 class="reveal">Fast, Free &amp;<br>Unlimited VPN</h2>
-    <p class="reveal">Add the subscription link to v2rayNG, V2BOX, Shadowrocket or any compatible client. One tap refresh brings fresh keys — no account needed.</p>
-    <div class="cta reveal">
-      <button class="btn btn-primary" onclick="copyText(SUB_URL,'Subscription link copied')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M6 15H5a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v1"/></svg>
-        Copy Subscription Link
+    <div class="eyebrow rv"><span class="ld"></span>All nodes operational</div>
+    <h1 class="rv">Free VPN,<br><span>without the noise.</span></h1>
+    <p class="rv">A single subscription link for <b>WireGuard</b>, <b>VLESS</b> and <b>Shadowsocks</b> nodes. Paste it into v2rayNG, V2BOX or Shadowrocket and refresh whenever you need new keys.</p>
+    <div class="cta rv">
+      <button class="btn btn-p" onclick="copyText(SUB_URL,'Subscription link copied')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M6 15H5a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v1"/></svg>
+        Copy subscription link
       </button>
-      <a class="btn btn-ghost" href="https://gist.githubusercontent.com/MrStealer111/a472ad6cc261f13d34a4c976c37c8125/raw/ServerProxy" target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M21 3l-9 9"/><path d="M19 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6"/></svg>
-        View Feed
+      <a class="btn btn-g" href="https://gist.githubusercontent.com/MrStealer111/a472ad6cc261f13d34a4c976c37c8125/raw/ServerProxy" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M21 3l-9 9"/><path d="M19 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6"/></svg>
+        Raw feed
       </a>
     </div>
   </section>
 
-  <div class="stats reveal">
-    <div class="stat"><b id="stTotal">0</b><span>Servers</span></div>
-    <div class="stat"><b id="stCountry">0</b><span>Countries</span></div>
-    <div class="stat"><b id="stProto">0</b><span>Protocols</span></div>
-    <div class="stat"><b>24/7</b><span>Uptime</span></div>
+  <div class="strip rv">
+    <div><b id="stTotal">0</b><span>Servers</span></div>
+    <div><b id="stCountry">0</b><span>Regions</span></div>
+    <div><b id="stProto">0</b><span>Protocols</span></div>
+    <div><b>24/7</b><span>Availability</span></div>
   </div>
 
-  <div class="sec reveal"><h3>Why ServerProxy</h3><span>Built for speed and privacy</span></div>
-  <div class="features reveal">
-    <div class="feat"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg></div><h4>Lightning Fast</h4><p>WireGuard tunnels tuned for low latency on mobile and desktop.</p></div>
-    <div class="feat"><div class="ficon"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></div><h4>Private &amp; Secure</h4><p>Modern ciphers, Reality TLS and no-log endpoints keep traffic safe.</p></div>
-    <div class="feat"><div class="ficon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.7 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.7-4-9s1.5-6.4 4-9z"/></svg></div><h4>Global Nodes</h4><p>Servers across Myanmar, Singapore, Japan, US and Thailand.</p></div>
-    <div class="feat"><div class="ficon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/></svg></div><h4>Always Free</h4><p>No signup, no limits, no credit card. Refresh any time you want.</p></div>
+  <div class="sec rv"><div class="l"><span class="no">01</span><h2>Why ServerProxy</h2></div><span class="r">Built for everyday use</span></div>
+  <div class="feats rv">
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg></div><h3>Low latency</h3><p>WireGuard tunnels tuned for mobile and desktop connections.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></div><h3>Encrypted</h3><p>Modern ciphers, Reality TLS and no-log endpoints by default.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.7 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.7-4-9s1.5-6.4 4-9z"/></svg></div><h3>Five regions</h3><p>Myanmar, Singapore, Japan, United States and Thailand.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/></svg></div><h3>No account</h3><p>No signup, no limits and no payment details required.</p></div>
   </div>
 
-  <div class="sec reveal"><h3>Subscription</h3><span>Copy this into your VPN app</span></div>
-  <div class="panel reveal">
-    <div class="plabel"><span class="dot"></span> Subscription Link</div>
+  <div class="sec rv"><div class="l"><span class="no">02</span><h2>Subscription</h2></div><span class="r">Paste into your client</span></div>
+  <div class="subbox rv">
+    <div class="lb"><span class="ld"></span>Subscription URL</div>
     <div class="srow">
       <input id="suburl" readonly value="https://gist.githubusercontent.com/MrStealer111/a472ad6cc261f13d34a4c976c37c8125/raw/ServerProxy">
-      <button class="btn btn-primary" onclick="copyText(document.getElementById('suburl').value,'Subscription link copied')">Copy</button>
+      <button class="btn btn-p" onclick="copyText(document.getElementById('suburl').value,'Subscription link copied')">Copy</button>
     </div>
   </div>
 
-  <div class="sec reveal"><h3>Servers by Region</h3><span>Tap a region to expand</span></div>
-  <div class="countries reveal" id="countries"></div>
+  <div class="sec rv" id="servers"><div class="l"><span class="no">03</span><h2>Servers</h2></div><span class="r">Select a region to expand</span></div>
+  <div class="regions rv" id="regions"></div>
 
-  <footer class="reveal">
-    <div>ချိတ်ဆက်မရပါက app ထဲမှာ Refresh နှိပ်ပြီး နောက်တစ်ခု ပြောင်းသုံးပါ။</div>
-    <div>Support: <a href="https://t.me/MrStealer_Official" target="_blank" rel="noopener">@MrStealer_Official</a></div>
+  <footer class="rv">
+    <div>ချိတ်ဆက်မရပါက app ထဲတွင် Refresh နှိပ်ပြီး အခြားတစ်ခုသို့ ပြောင်းပါ။</div>
+    <div><a href="https://t.me/MrStealer_Official" target="_blank" rel="noopener">@MrStealer_Official</a></div>
   </footer>
 </div>
 <div class="toast" id="toast"></div>
@@ -221,74 +258,63 @@
 const SERVERS = [{"name": "🇸🇬 Singapore Server 1", "type": "VLESS", "host": "sg.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@sg.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=www.sony.com&fp=chrome&pbk=0YoIuSCuppS3SwPMNztXXn37vRsQQtOxVyIVsTthpzg&sid=7681de4f&spx=%2Fc40d33db6354698&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Server%201"}, {"name": "🇸🇬 Singapore Server 2", "type": "VLESS", "host": "sg2.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@sg2.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=v47AHwPyDl4BvNZuQkTb9-wwxbdkp2yGh7IbztKvgQY&sid=8d36bcabaabb7eb6&spx=%2Fcf4c87a3585ec68&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Server%202"}, {"name": "🇸🇬 Singapore Server 3", "type": "VLESS", "host": "sg3.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@sg3.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=krs2ZwIcpCrnMuCBHIn6NhsZ6lDLXF9EE7SmDwqUaiI&sid=f80bf12eae23&spx=%2Fd1ff2eb94d5dd6c&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Server%203"}, {"name": "🇯🇵 Japan Server", "type": "VLESS", "host": "jp.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@jp.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=cXez-UcQktnsncAaUjgtXvanQUPrnVuP0SGf2qxGpRo&sid=32b8&spx=%2Fb148b56a8522ac7&type=tcp&headerType=none#%F0%9F%87%AF%F0%9F%87%B5%20Japan%20Server"}, {"name": "🇺🇸 US Server", "type": "VLESS", "host": "us.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@us.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=XtO4IW0L4qehl0xi__7BggmDcz6HQReuJVqUj2R_YX4&sid=997469&spx=%2F328cd85552923bd&type=tcp&headerType=none#%F0%9F%87%BA%F0%9F%87%B8%20US%20Server"}, {"name": "🇸🇬 Singapore Test", "type": "VLESS", "host": "singapore.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@singapore.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=uuvvAP-Kkh5TY7u7K10OiwS1WzrUzV-B80xUG-z0Sx4&sid=1416&spx=%2F715c2c1c3bf4376&type=tcp&headerType=none#%F0%9F%87%B8%F0%9F%87%AC%20Singapore%20Test"}, {"name": "🇹🇭 Thailand Server", "type": "VLESS", "host": "th.gostepnext.com", "port": 443, "uri": "vless://3b35a13c-ec89-46b3-8ded-c727bea6f97e@th.gostepnext.com:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=google.com&fp=chrome&pbk=95klx-bqadfdnVnH68ausLMcFGtV_UCFN1XfJycsLHE&sid=edfea57c28b4cd&spx=%2F6114db6ee5e5ee7&type=tcp&headerType=none#%F0%9F%87%B9%F0%9F%87%AD%20Thailand%20Server"}, {"name": "🇺🇸 USAServer", "type": "Shadowsocks", "host": "198.251.78.252", "port": 443, "uri": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpPR05PYTZiUzY0U1lFckdHZUNTMEd6@198.251.78.252:443/?outline=1#%F0%9F%87%BA%F0%9F%87%B8%20USAServer", "method": "chacha20-ietf-poly1305"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.3", "port": 500, "uri": "wireguard://W8sUIXqAWzps6y9g1yhTAx0fVsg%2FmnRXTCZSEzK1oUk%3D@162.159.192.3:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:848b:36e8:e335:4fa9:df4a#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.11", "port": 500, "uri": "wireguard://dg5pc6GlAkQs9WtEw3Yy6SwwPKX2jWf3Oc7ebf8Il18%3D@162.159.192.11:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:86c0:1984:8e8f:b384:9645#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.16", "port": 500, "uri": "wireguard://pnC6c11gCTzcuMrJOuMZ7JDpNVE7oWHMmNarkF3OZcc%3D@162.159.192.16:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8efe:cd98:9ecd:ace7:6636#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.3", "port": 500, "uri": "wireguard://5wX8tR3JZJZw0NKfNhV1TiAfDVU1c8tGqLmKhm7Je6A%3D@162.159.195.3:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8da2:f0e9:aef4:d154:8e10#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.1", "port": 500, "uri": "wireguard://3%2F3RBo%2FWob9OIS8DohCQorT8ezt%2FoCgt%2BRysnbAfhN4%3D@162.159.195.1:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8c02:2668:b7b6:666c:9a4b#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "8.34.146.113", "port": 500, "uri": "wireguard://1swi7iQVLGkx%2ByTqFDUg6DrVQP%2BGV2JTELL%2Bg1crNCI%3D@8.34.146.113:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a6e:7c06:72db:cf3b:6694#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.15", "port": 500, "uri": "wireguard://1%2BAqp590yXKh0CYBr11ol1k5CUtOKhmr8m7ga7EJIu4%3D@162.159.192.15:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a64:3a2e:2142:588a:800b#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.6", "port": 500, "uri": "wireguard://bHXQPbXp1r%2FHlR8JXAaJMp%2FDuSLMANL3c3JlXrBo9FM%3D@162.159.195.6:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8e2b:9378:664b:2d21:b07f#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.13", "port": 500, "uri": "wireguard://%2BS8b6i9V1UvXjtk3dixhxZUoVqbbTZ7VZkc8wnlpT3s%3D@162.159.192.13:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8bcc:d418:5733:92:1e58#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.19", "port": 500, "uri": "wireguard://3MFMAp6cIQwvU%2FEQ6fS%2BOUe3FuO5CWNCyU1wWkC4mLI%3D@162.159.192.19:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8996:bfc9:67b8:bbb6:a7cd#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.4", "port": 500, "uri": "wireguard://OPQXESfdkdtySg%2FF5ZkvMcEXs2jRXTzx3koJYQ%2BMvo0%3D@162.159.195.4:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:87ef:bb01:a4cc:5e71:5927#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.8", "port": 500, "uri": "wireguard://iWouX7OrbY1EGoI7m194It%2FV8zvS6sMOGtYcxYoi0IA%3D@162.159.195.8:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8ca2:15db:df03:d4f8:89fd#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.2", "port": 500, "uri": "wireguard://EDhT071qVAmHqpcbakKMcugzMH6bZcGPcdDJ8vg9nlw%3D@162.159.195.2:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a60:821:7b60:afaf:a246#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.6", "port": 500, "uri": "wireguard://RvAMNTN54rvy48zS9lnbSnTiDlcKWFjEgnzdUA64W%2FY%3D@162.159.192.6:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8357:bbee:bc0d:1f59:368e#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.17", "port": 500, "uri": "wireguard://K9YDhM9AyTjEN76kxqAnQK9SHlA%2BpmSwtZMb3sgFWzU%3D@162.159.192.17:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:89bd:6d54:71c9:ba4c:f7f8#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.2", "port": 500, "uri": "wireguard://1nPfLFFt0QbddzPvPEFr%2BCT%2BZ3xHp4h6RkJopnTcYHU%3D@162.159.192.2:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8c0d:84b:ac34:189f:3dce#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.5", "port": 500, "uri": "wireguard://gv9USA2GYLk%2Fd3nieElF6kvBJ3aXIkCB14rGNFo9WZA%3D@162.159.192.5:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:86ef:7f38:b8e8:7afd:41b#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "188.114.99.22", "port": 500, "uri": "wireguard://L85ju5F6klMWtMMJLMahIZJsTEHtZzyHvZzVosLia0Q%3D@188.114.99.22:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a63:3f99:c0b4:9e8a:7a00#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.4", "port": 500, "uri": "wireguard://7BMlyRMXFEsRwkEkkAFrWWi0ySgGpYyZjcrTVdhfphA%3D@162.159.192.4:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8a8b:2f47:52e1:2906:15cb#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.5", "port": 500, "uri": "wireguard://FGwUBzu%2FskMLtzD14wX%2BlrkRGt1vzVMy%2FkoWW0bWyfQ%3D@162.159.195.5:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:87f9:b292:9763:43a4:c514#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.20", "port": 500, "uri": "wireguard://zmDmfirqCugs9eCn8qvJJ0ARQzhY8zpV5%2BVXOHyNE7M%3D@162.159.192.20:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8eb0:fbd9:c353:3d71:43f4#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.12", "port": 500, "uri": "wireguard://sP5Vf7nnjwpdIRowzkW9U97N8gk7PHMZpApbya%2FzJEc%3D@162.159.192.12:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:898e:de64:44d5:3bab:e095#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.14", "port": 500, "uri": "wireguard://HHI4A45Ul53SBGlnwPdKlhTYc3S7d%2BdfG0faiu%2F5tBg%3D@162.159.192.14:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8254:e6e5:1709:661:4d24#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.195.10", "port": 500, "uri": "wireguard://LC5BBfdv3bPvYDcbtvJIoreAM4WykygurSIsDkn5QEA%3D@162.159.195.10:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8198:dc27:a0ba:6f64:a05c#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}, {"name": "🇲🇲 ServerProxy", "type": "WireGuard", "host": "162.159.192.7", "port": 500, "uri": "wireguard://cuO345yLqgA%2BUplfP2XEMZ%2FexMjqtoD5KUhPTJLTNHw%3D@162.159.192.7:500?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2,2606:4700:110:8aef:9306:f0f6:1d5e:b5a3#%F0%9F%87%B2%F0%9F%87%B2%20ServerProxy"}];
 const SUB_URL = "https://gist.githubusercontent.com/MrStealer111/a472ad6cc261f13d34a4c976c37c8125/raw/ServerProxy";
 const COUNTRIES = {"🇲🇲": ["Myanmar", "MM"], "🇸🇬": ["Singapore", "SG"], "🇯🇵": ["Japan", "JP"], "🇺🇸": ["United States", "US"], "🇹🇭": ["Thailand", "TH"]};
-const TYPE_CLASS = {'VLESS':'t-vless','Shadowsocks':'t-ss','WireGuard':'t-wg'};
 
 function flagOf(n){const m=n.match(/[\u{1F1E6}-\u{1F1FF}]{2}/u);return m?m[0]:'🌐';}
 function plainName(n){return n.replace(/[\u{1F1E6}-\u{1F1FF}]{2}\s*/gu,'').trim()||'Server';}
 function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
-// group
-const groups = {};
+const groups={};
 SERVERS.forEach((s,i)=>{
-  const f = flagOf(s.name);
-  const c = COUNTRIES[f] || [plainName(s.name),'--'];
-  const key = c[1];
-  if(!groups[key]) groups[key] = {flag:f,name:c[0],code:c[1],servers:[]};
-  groups[key].servers.push({...s,i});
+  const f=flagOf(s.name), c=COUNTRIES[f]||[plainName(s.name),'--'];
+  if(!groups[c[1]]) groups[c[1]]={flag:f,name:c[0],servers:[]};
+  groups[c[1]].servers.push({...s,i});
 });
-const groupList = Object.values(groups);
+const groupList=Object.values(groups);
 
 function render(){
-  document.getElementById('countries').innerHTML = groupList.map((g,gi)=>{
+  document.getElementById('regions').innerHTML=groupList.map((g,gi)=>{
     const types=[...new Set(g.servers.map(s=>s.type))];
-    return `<div class="country" id="c${gi}">
-      <div class="chead" onclick="toggle(${gi})">
+    return `<div class="reg" id="r${gi}">
+      <div class="rhead" onclick="toggle(${gi})">
         <div class="flag">${g.flag}</div>
-        <div class="cinfo">
-          <div class="cname">${esc(g.name)}</div>
-          <div class="cmeta"><span>${g.servers.length} server${g.servers.length>1?'s':''}</span>${types.map(t=>`<span class="tag ${TYPE_CLASS[t]}">${t}</span>`).join('')}</div>
+        <div class="rinfo">
+          <div class="rcount">${g.servers.length} node${g.servers.length>1?'s':''}</div>
+          <div class="rname">${esc(g.name)}</div>
+          <div class="rtags">${types.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
         </div>
         <div class="chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
       </div>
-      <div class="cbody">
-        ${g.servers.map((s,i)=>`<div class="cline">
+      <div class="rbody">
+        ${g.servers.map(s=>`<div class="line">
           <span class="h">${esc(s.host)}:${s.port}</span>
-          <button class="copybtn" data-uri="${encodeURIComponent(s.uri)}" onclick="copyBtn(this)">Copy</button>
+          <button class="cp" data-u="${encodeURIComponent(s.uri)}" onclick="copyBtn(this)">copy</button>
         </div>`).join('')}
       </div>
     </div>`;
   }).join('');
 }
-function toggle(gi){ document.getElementById('c'+gi).classList.toggle('open'); }
+function toggle(gi){document.getElementById('r'+gi).classList.toggle('open');}
 
-function copyBtn(btn){
-  const uri = decodeURIComponent(btn.getAttribute('data-uri'));
-  copyText(uri,'Config copied',()=>{
-    const old=btn.textContent; btn.textContent='Copied'; btn.classList.add('done');
-    setTimeout(()=>{btn.textContent=old;btn.classList.remove('done')},1400);
+function copyBtn(b){
+  copyText(decodeURIComponent(b.getAttribute('data-u')),'Config copied',()=>{
+    b.textContent='copied'; b.classList.add('done');
+    setTimeout(()=>{b.textContent='copy';b.classList.remove('done')},1400);
   });
 }
-
-function copyText(txt,msg,after){
-  const done=()=>{toast(msg||'Copied'); after&&after();};
-  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(done).catch(()=>fb(txt,done));}
-  else fb(txt,done);
+function copyText(t,m,after){
+  const d=()=>{toast(m||'Copied');after&&after();};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(d).catch(()=>fb(t,d));}
+  else fb(t,d);
 }
-function fb(txt,cb){const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);cb&&cb();}
-let tt;function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),1900);}
+function fb(t,cb){const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(a);cb&&cb();}
+let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),1800);}
 
-// stats
 document.getElementById('stTotal').textContent=SERVERS.length;
 document.getElementById('stCountry').textContent=groupList.length;
 document.getElementById('stProto').textContent=new Set(SERVERS.map(s=>s.type)).size;
 
-// reveal on scroll
-const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4)*70+'ms';io.observe(el);});
-
-// cursor glow
-const glow=document.getElementById('glow');
-window.addEventListener('mousemove',e=>{glow.style.setProperty('--mx',e.clientX+'px');glow.style.setProperty('--my',e.clientY+'px');},{passive:true});
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=Math.min(i*45,220)+'ms';io.observe(el);});
 
 render();
 </script>
